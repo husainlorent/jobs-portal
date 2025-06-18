@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int               @id @default(autoincrement())
+  email             String            @unique
+  name              String?
+  password          String
+  role              Role              @default(CANDIDATE)
+  status            Boolean           @default(true)
+  candidate_profile CandidateProfile?
+}
+
+model CandidateProfile {
+  id         Int      @id @default(autoincrement())
+  full_name  String
+  gender     Gender
+  phone      String
+  cv         String
+  birthdate  DateTime @db.Date
+  address    String
+  openToWork Boolean  @default(false)
+  status     Boolean  @default(true)
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id    Int      @unique
+
+  candidateLanguages CandidateLanguage[]
+}
+
+model Language {
+  name               String              @id
+  candidateLanguages CandidateLanguage[]
+}
+
+model CandidateLanguage {
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+  language           Language         @relation(fields: [languageName], references: [name])
+  languageName       String
+  level Level @default(BASIC)
+
+  @@unique([candidateProfileId, languageName])
+}
+
+enum Level {
+  NATIVE
+  FLUENT
+  BASIC
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
+enum Role {
+  ADMIN
+  CANDIDATE
+  RECRUITER
+}
