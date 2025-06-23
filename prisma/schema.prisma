@@ -16,6 +16,8 @@ model User {
   role              Role              @default(CANDIDATE)
   status            Boolean           @default(true)
   candidate_profile CandidateProfile?
+
+  companies Company[]
 }
 
 model CandidateProfile {
@@ -31,7 +33,10 @@ model CandidateProfile {
   user       User     @relation(fields: [user_id], references: [id])
   user_id    Int      @unique
 
-  candidateLanguages CandidateLanguage[]
+  candidateLanguages  CandidateLanguage[]
+  candidateEducations CandidateEducation[]
+  CandidateSkill      CandidateSkill[]
+  CandidateExperience CandidateExperience[]
 }
 
 model Language {
@@ -44,9 +49,81 @@ model CandidateLanguage {
   candidateProfileId Int
   language           Language         @relation(fields: [languageName], references: [name])
   languageName       String
-  level Level @default(BASIC)
+  level              Level            @default(BASIC)
 
   @@unique([candidateProfileId, languageName])
+}
+
+model Education {
+  id   Int    @id @default(autoincrement())
+  name String
+  map  String
+
+  candidateEducations CandidateEducation[]
+}
+
+model CandidateEducation {
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  education   Education @relation(fields: [educationId], references: [id])
+  educationId Int
+
+  major     String
+  degree    Degree @default(BACHELOR)
+  yearStart Int
+  yearEnd   Int
+
+  @@id([candidateProfileId, educationId])
+}
+
+model Skill {
+  name           String           @id
+  CandidateSkill CandidateSkill[]
+}
+
+model CandidateSkill {
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+
+  skill     Skill  @relation(fields: [skillName], references: [name])
+  skillName String
+
+  @@id([candidateProfileId, skillName])
+}
+
+model CandidateExperience {
+  id               Int       @id @default(autoincrement())
+  company          String
+  department       String
+  startDate        DateTime  @db.Date
+  endDate          DateTime? @db.Date
+  responsibilities String
+
+  candidateProfile   CandidateProfile @relation(fields: [candidateProfileId], references: [id])
+  candidateProfileId Int
+}
+
+model Company {
+  id                Int      @id @default(autoincrement())
+  name              String
+  description       String
+  teamSize          Int      @default(50)
+  establishmentDate DateTime @db.Date
+  views             Int      @default(0)
+  websiteUrl        String
+  isApproved        Boolean  @default(false)
+  mapLink           String?
+  address           String
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int
+}
+
+enum Degree {
+  BACHELOR
+  MASTER
+  ENGINEER
 }
 
 enum Level {

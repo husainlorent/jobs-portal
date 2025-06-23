@@ -19,7 +19,7 @@ candidateProfileRoute.post(
   validateSchema(candidateProfileCreateSchema),
   asyncWrapper(candidateProfileController.create)
 )
-candidateProfileRoute.get('/', verifyUser, allowAccess('ADMIN'), asyncWrapper(candidateProfileController.readAll))
+candidateProfileRoute.get('/', verifyUser, asyncWrapper(candidateProfileController.readAll))
 candidateProfileRoute.get(
   '/:id',
   verifyUser,

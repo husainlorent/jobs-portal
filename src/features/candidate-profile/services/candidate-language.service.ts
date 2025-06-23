@@ -1,10 +1,20 @@
-import { CandidateLanguage, CandidateProfile } from '@prisma/client'
+import { CandidateLanguage, CandidateProfile, Level } from '@prisma/client'
 import { candidateProfileService } from './candidate-profile.service'
 import prisma from '@/prisma'
+import { BadRequestException } from '@/globals/cores/error.core'
+import { ICandidateLanguage } from '../interfaces/candidate-language.interface'
 
 class CandidateLanguageService {
-  public async create(requestBody: CandidateLanguage, currentUser: UserPayload) {
+  public async create(requestBody: ICandidateLanguage, currentUser: UserPayload): Promise<CandidateLanguage> {
     const { languageName, level } = requestBody
+
+    const language = await prisma.language.findUnique({
+      where: { name: languageName }
+    })
+
+    if (!language) {
+      throw new BadRequestException('Language not found')
+    }
 
     const candidateProfile: CandidateProfile = await candidateProfileService.readOneByUserId(currentUser.id)
 
@@ -15,7 +25,50 @@ class CandidateLanguageService {
         level
       }
     })
+
+    return candidateLanguage
+  }
+
+  public async readAll() {
+    const candidateLanguages: CandidateLanguage[] = await prisma.candidateLanguage.findMany()
+    return candidateLanguages
+  }
+
+  public async readMyLanguages(currentUser: UserPayload) {
+    const candidateProfile: CandidateProfile = await candidateProfileService.readOneByUserId(currentUser.id)
+
+    const candidateLanguages: CandidateLanguage[] = await prisma.candidateLanguage.findMany({
+      where: { candidateProfileId: candidateProfile.id }
+    })
+    return candidateLanguages
+  }
+
+  public async updateLevel(currentUser: UserPayload, languageName: string, level: Level): Promise<CandidateLanguage> {
+    const candidateProfile: CandidateProfile = await candidateProfileService.readOneByUserId(currentUser.id)
+
+    const candidateLanguage = await prisma.candidateLanguage.update({
+      where: {
+        candidateProfileId_languageName: {
+          candidateProfileId: candidateProfile.id,
+          languageName
+        }
+      },
+      data: { level }
+    })
+    return candidateLanguage
+  }
+
+  public async remove(currentUser: UserPayload, languageName: string): Promise<void> {
+    const candidateProfile: CandidateProfile = await candidateProfileService.readOneByUserId(currentUser.id)
+
+    await prisma.candidateLanguage.delete({
+      where: {
+        candidateProfileId_languageName: {
+          candidateProfileId: candidateProfile.id,
+          languageName
+        }
+      }
+    })
   }
 }
-
 export const candidateLanguageService: CandidateLanguageService = new CandidateLanguageService()

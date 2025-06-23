@@ -28,7 +28,12 @@ class CandidateProfileService {
   }
 
   public async readAll(): Promise<CandidateProfile[]> {
-    const candidates: CandidateProfile[] = await prisma.candidateProfile.findMany()
+    const candidates: CandidateProfile[] = await prisma.candidateProfile.findMany({
+      include: {
+        candidateLanguages: true,
+        candidateEducations: true
+      }
+    })
     return candidates
   }
 
