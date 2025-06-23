@@ -7,6 +7,7 @@ import candidateEducationRoute from '@/features/candidate-profile/routes/candida
 import candidateSkillRoute from '@/features/candidate-profile/routes/candidate-skill.route'
 import candidateExperienceRoute from '@/features/candidate-profile/routes/candidate-experience.route'
 import companyRoute from '@/features/company/routes/company.route'
+import companyImageRoute from '@/features/company/routes/company-image.route'
 
 function appRoutes(app: Application) {
   app.use('/api/v1/users', userRoute)
@@ -18,6 +19,7 @@ function appRoutes(app: Application) {
   app.use('/api/v1/candidate-skill', candidateSkillRoute)
   app.use('/api/v1/candidate-experiences', candidateExperienceRoute)
   app.use('/api/v1/companies', companyRoute)
+  app.use('/api/v1/company-images', companyImageRoute)
 }
 
 export default appRoutes
