@@ -1,4 +1,4 @@
-import { Language, PrismaClient, Skill } from '@prisma/client'
+import { Benefit, Industry, JobRole, Language, PrismaClient, Skill } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -21,24 +21,66 @@ async function createEducationData() {
     data
   })
 }
-async function createSkillData() {
-  const data: Skill[] = [
-    { name: 'JavaScript' },
-    { name: 'HTML' },
-    { name: 'CSS' },
-    { name: 'C++' },
-    { name: 'C#' },
-    { name: 'Docker' },
-    { name: 'ReactJS' },
-    { name: 'TypeScript' },
-    { name: 'NodeJS' }
+
+// async function createSkillData() {
+//   const data: Skill[] = [
+//     { name: 'JavaScript' },
+//     { name: 'HTML' },
+//     { name: 'CSS' },
+//     { name: 'C++' },
+//     { name: 'C#' },
+//     { name: 'Docker' },
+//     { name: 'ReactJS' },
+//     { name: 'TypeScript' },
+//     { name: 'NodeJS' }
+//   ]
+
+//   await prisma.skill.createMany({
+//     data
+//   })
+// }
+
+async function createIndustryData() {
+  const data: Industry[] = [
+    { name: 'Advertising and marketing' },
+    { name: 'Computer and technology' },
+    { name: 'Education' },
+    { name: 'Finance and economic' }
   ]
 
-  await prisma.skill.createMany({
+  await prisma.industry.createMany({
     data
   })
 }
 
-createSkillData()
+async function createJobRoleData() {
+  const data: JobRole[] = [
+    { name: 'senior' },
+    { name: 'fresher' },
+    { name: 'internship' },
+    { name: 'junior' },
+    { name: 'middle' }
+  ]
+
+  await prisma.jobRole.createMany({
+    data
+  })
+}
+
+async function createBenefitData() {
+  const data: Benefit[] = [
+    { name: 'medical coverage' },
+    { name: 'dental insurance' },
+    { name: 'vision insurance' },
+    { name: 'life insurance policies' },
+    { name: 'mental health coverage' }
+  ]
+
+  await prisma.benefit.createMany({
+    data
+  })
+}
+
+createBenefitData()
   .then()
   .catch((err) => console.log(err))

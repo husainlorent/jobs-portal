@@ -3,6 +3,7 @@ import { ICompany } from '../interfaces/company.interface'
 import prisma from '@/prisma'
 import { NotFoundException } from '@/globals/cores/error.core'
 import { getPaginationAndFilters } from '@/globals/helpers/pagination-filter.helpers'
+import { deleteImage } from '@/globals/helpers/upload.helper'
 
 class CompanyService {
   public async create(requestBody: ICompany, currentUser: UserPayload): Promise<Company> {
@@ -149,6 +150,10 @@ class CompanyService {
 
   public async remove(id: number, currentUser: UserPayload): Promise<void> {
     await this.findOneAdmin(id)
+    const images = await prisma.companyImage.findMany({ where: { companyId: id } })
+    for (const img of images) {
+      await deleteImage(img.imageUrl)
+    }
 
     await prisma.company.delete({
       where: {
